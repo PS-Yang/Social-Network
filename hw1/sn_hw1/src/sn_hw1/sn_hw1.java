@@ -19,12 +19,13 @@ public class sn_hw1 {
 	private static Hashtable<String,Integer> distribution=new Hashtable<String,Integer>();
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		
-		String input_path="./data/com-amazon.ungraph.txt";
+		//String input_path="./data/com-amazon.ungraph.txt";
+		String input_path="./data/1.txt";
 		String output_path="./output.csv";
 		readfile(input_path);
 		coefficient();
 		count_diameter();
+		//System.out.println("HT "+ht.size()+" root "+ht_root.size());
 		System.out.println("Average Degree\t: "+degree);
 		System.out.println("Average clustering coefficient: "+cof);
 		System.out.println("Diameter\t: "+diameter);
@@ -68,7 +69,6 @@ public class sn_hw1 {
 				}
 				list2.add(array[0]);
 				ht.put(array[1],list2);
-				
 			}
 			line++;
 		}
@@ -122,49 +122,63 @@ public class sn_hw1 {
 	private static void count_diameter() {
 		Hashtable<String, Integer> ht_used=new Hashtable<>();
 		Hashtable<String, Integer> ht_current=new Hashtable<>();
-		
+		Hashtable<String, Integer> not_root=new Hashtable<String, Integer>();
 		Enumeration e1 = ht.keys();
 		int count=1;
 		while(e1. hasMoreElements())
 		{
 			int d=0;
 			String k1= e1.nextElement().toString();  //取得Key值
-			ht_used.put(k1, 1);
-			for (int i = 0; i < ht.get(k1).size(); i++) {
-				ht_current.put(ht.get(k1).get(i).toString(), 1);
-			}
-			d=d+1;
-			while(ht_current.size()!=0)
+			if(not_root.get(k1)==null )
 			{
-				ht_used.putAll(ht_current);
-				Hashtable<String, Integer> tem=new Hashtable<>();
-				Enumeration e_current = ht_current.keys();
-				while(e_current. hasMoreElements())
+				ht_used.put(k1, 1);
+				for (int i = 0; i < ht.get(k1).size(); i++) {
+					ht_current.put(ht.get(k1).get(i).toString(), 1);
+				}
+				d=d+1;
+				while(ht_current.size()!=0)
 				{
-					String k_current= e_current.nextElement().toString();  //取得Key值
-					
-					ArrayList<String> temp=new ArrayList<>();
-					temp=ht.get(k_current);
-					for (String t:temp) 
+					ht_used.putAll(ht_current);
+					Hashtable<String, Integer> tem=new Hashtable<>();
+					Enumeration e_current = ht_current.keys();
+					while(e_current. hasMoreElements())
 					{
-						if(ht_used.get(t)==null /*&& tem.get(t)!=1*/)
+						String k_current= e_current.nextElement().toString();  //取得Key值
+						ArrayList<String> temp=new ArrayList<>();
+						temp=ht.get(k_current);
+						for (String t:temp) 
 						{
-							tem.put(t, 1);
+							if(ht_used.get(t)==null && tem.get(t)==null)
+							{
+								tem.put(t, d);
+							}
 						}
 					}
+					ht_current.clear();
+					ht_current.putAll(tem);
+					tem.clear();
+					d++;
 				}
-				ht_current.clear();
-				ht_current.putAll(tem);
-				tem.clear();
-				d++;
+				if((d-1)>diameter)
+					diameter=d-1;
+				Enumeration e_tem = ht_used.keys();
+				while(e_tem. hasMoreElements())
+				{
+					String keykey=e_tem.nextElement().toString();
+					int tem_degree= ht_used.get(keykey);
+					int value=diameter-d;//最大-這次diameter
+					
+					if(value>0 && tem_degree<value)
+					{
+						not_root.put(keykey, 1);
+					}
+					
+				}
+				ht_used.clear();
+				System.out.println("N="+count);
+				System.out.print("Current Diameter\t: "+(d-1));
+				System.out.println("\tMax Diameter\t: "+diameter);
 			}
-			if((d-1)>diameter)
-				diameter=d-1;
-			ht_used.clear();
-			System.out.println("N="+count);
-			System.out.print("Current Diameter\t: "+(d-1));
-			System.out.println("\tMax Diameter\t: "+diameter);
-			
 			count++;
 		}
 	}
