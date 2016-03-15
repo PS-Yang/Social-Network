@@ -35,7 +35,6 @@ public class sn_hw1 {
 	{
 		ArrayList<String> list = new ArrayList<>();
 		ArrayList<String> list2 = new ArrayList<>();
-		//Hashtable<String,ArrayList> ht=new Hashtable<String,ArrayList>();
 		FileInputStream fs=new FileInputStream(path); 
 		BufferedReader br =new BufferedReader(new InputStreamReader(fs,"UTF-8"));
 		String str="";
